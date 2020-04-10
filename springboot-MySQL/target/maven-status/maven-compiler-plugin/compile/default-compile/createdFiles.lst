@@ -1,0 +1,7 @@
+com\wwsoft\mysql\data\Persons.class
+com\wwsoft\mysql\repo\DBRepository.class
+com\wwsoft\mysql\MainApp.class
+com\wwsoft\mysql\service\Configer.class
+com\wwsoft\mysql\service\DBServiceImpl.class
+com\wwsoft\mysql\api\DBService.class
+com\wwsoft\mysql\ApplicationConfiguration.class
