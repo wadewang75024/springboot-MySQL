@@ -19,3 +19,6 @@ drop table new_persons;
 
 insert into new_persons
 values (0, 'Wade', 'Wang', 'Test Dr', 'Test', STR_TO_DATE('2020-04-10', '%Y-%m-%d'), STR_TO_DATE('2020-04-10', '%Y-%m-%d'));
+
+insert into new_persons
+values (0, 'Yu', 'Mary', 'Test Dr', 'Test', STR_TO_DATE('2020-04-10', '%Y-%m-%d'), STR_TO_DATE('2020-04-10', '%Y-%m-%d'));
