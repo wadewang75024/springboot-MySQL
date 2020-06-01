@@ -3,7 +3,7 @@ package com.wwsoft.mysql.api;
 
 import org.springframework.data.repository.query.Param;
 
-import com.wwsoft.mysql.data.Persons;
+import com.wwsoft.mysql.persistence.entities.Persons;
 
 public interface DBService {
 	public Persons getDataEntry(Long id) throws Exception;

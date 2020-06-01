@@ -1,9 +1,8 @@
 package com.wwsoft.mysql;
 
-import java.util.Date;
-
 import java.util.logging.Logger;
 
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -13,8 +12,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import com.wwsoft.mysql.api.DBService;
-import com.wwsoft.mysql.data.Persons;
 import com.wwsoft.mysql.service.Configer;
 
 /**
@@ -23,7 +20,7 @@ import com.wwsoft.mysql.service.Configer;
 @EnableAutoConfiguration(exclude=DataSourceAutoConfiguration.class)
 @SpringBootApplication
 @ComponentScan("com.wwsoft.mysql")
-@EnableJpaRepositories(basePackages = "com.wwsoft.mysql.repo") 
+@EnableJpaRepositories(basePackages = "com.wwsoft.mysql.persistence.repositores") 
 public class MainApp { 
 	
 	ConfigurableApplicationContext context;
@@ -31,79 +28,9 @@ public class MainApp {
 	protected static Logger logger = Logger.getLogger("MainApp");
 	
 	@Autowired
-	DBService dbService;
-	
-	private Persons saveDataEntity(String firstName) {
-		logger.info("******************  Save DataEntity");
-		Persons data = null;
-		try {
-			data = new Persons();
-			data.setFirstName(firstName);
-			data.setLastName("Test");
-			data.setAddress("This is a test");
-			data.setCity("Test");
-			Date time = new Date();
-			logger.info("**************** time: " + time.toString());
-			data.setCreateDate(time);
-			data.setUpdateDate(time);
-			dbService.saveDataEntry(data);
-			logger.info("Save DataEntity complete");
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return data;
-	}
-	
-	private Persons retrieveDataEntiry(Long pid) {
-		logger.info("****************** retrieving a DataEntity with pid : " + pid);
-		Persons result=null;
-		try {				  	
-			result = dbService.getDataEntry(pid);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	
-	private Persons updateDataEntiry(Persons person) {
-		logger.info("****************** updating a DataEntity with pid : " + person.getId());
-		Persons result=null;
-		try {				  	
-			person.setFirstName("Charles");
-			result = dbService.updateDataEntry(person);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	
-	private Persons deleteDataEntiry(Persons person) {
-		logger.info("****************** deleting a DataEntity with pid : " + person.getId());
-		Persons result=null;
-		try {				  	
-			dbService.deleteDataEntry(person);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	
-	private Persons deleteDataEntiryByFirstName(String firstName) {
-		logger.info("****************** deleting a DataEntity with first name : " + firstName);
-		Persons result=null;
-		try {				  	
-			dbService.deleteDataEntryByFirstName(firstName);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
+	private BusinessApplicationHibernate businessApplicationH;
+	@Autowired
+	private BusinessApplicationJPA businessApplicationJ;
 	
     public static void main(final String[] args) throws Exception { 
     	    	
@@ -117,26 +44,20 @@ public class MainApp {
     	MainApp mainObj = ctx.getBean(MainApp.class);
     	mainObj.context = ctx;
     	
-    	// Create a person with first name David
-    	Persons david = mainObj.saveDataEntity("David");
-    	logger.info("new person: " + david.getFirstName());
+    	SessionFactory sessionFactory = (SessionFactory) ctx.getBean("sessionFactory");
+    	logger.info("*******************  sessionFactory: " + sessionFactory);
     	
-    	// Update the person first name to Charles
-    	Persons charles = mainObj.updateDataEntiry(david);
-    	Persons retrievedCharles = mainObj.retrieveDataEntiry(charles.getId());
-		logger.info("retrieved person: " + retrievedCharles.getFirstName());
-		
-		// Remove the person with id
-		mainObj.deleteDataEntiry(retrievedCharles);
-		
-		retrievedCharles = mainObj.retrieveDataEntiry(charles.getId());
-		logger.info("retrieved person: " + retrievedCharles);
-		
-		// Create a person with first name Wade
-		Persons wade = mainObj.saveDataEntity("Wade");
-		
-		// Delete the person with first name
-		mainObj.deleteDataEntiryByFirstName(wade.getFirstName());
+    	logger.info("*******************  Start business processing......");
+    	mainObj.businessApplicationJ.start();
+    	mainObj.businessApplicationH.start();
+    	
+    	/**
+    	 * For Spring to call @PreDestroy callback method when you application shuts down, 
+    	 * you have to add a shutdown hook and close the application context it in. 
+    	 * You could attach the hook to JVM using Runtime.getRuntime().addShutdownHook(Thread) 
+    	 * or to Jetty if it provides such an API. Here is how you'd do it with JVM shutdown hook:
+    	 */
+    	ctx.registerShutdownHook();
   
 		logger.info("******************  Main ends!.");
     } 

@@ -1,22 +1,16 @@
 package com.wwsoft.mysql.service;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.wwsoft.mysql.api.DBService;
-import com.wwsoft.mysql.data.Persons;
-import com.wwsoft.mysql.repo.DBRepository;
+import com.wwsoft.mysql.persistence.entities.Persons;
+import com.wwsoft.mysql.persistence.repositores.PersonsRepository;
 
 @Service
 public class DBServiceImpl implements DBService {
 	@Autowired
-	private DBRepository dbRepo;
+	private PersonsRepository dbRepo;
 	
 	public Persons saveDataEntry(Persons entity) {
 		Persons result = dbRepo.save(entity);
