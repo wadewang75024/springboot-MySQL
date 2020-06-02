@@ -1,6 +1,5 @@
 package com.wwsoft.mysql.persistence.entities;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,13 +10,33 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.NamedQuery;
+
 @Entity
 @Table(name="new_persons")
+/**
+ * The following queries are used by Hibernate:
+ * 			- PersonContact_findByPersonId
+ * 			- findAllPersonsWithContacts_native
+ * 
+ * The following queries are used by JPA:
+ * 			******** note that the prefix Persons.******************* :
+ * 			- Persons.findPersonsWithContacts
+ */
+@NamedQuery(name = "PersonContact_findByPersonId", 
+            query = "from Persons p left join fetch p.personContacts where p.id=:personId")
+@NamedNativeQuery(name="findAllPersonsWithContacts_native", 
+				  query="select p.person_id, p.last_name, p.first_name, pc.contact_id, pc.email " + 
+                        " from new_persons p, new_persons_contacts pc where p.person_id=pc.contact_id " )
+@NamedQuery(name="Persons.findPersonsWithContacts", 
+//			query="select distinct p from Persons p where p.id=:personId")
+            query="select distinct p from Persons p left join fetch p.personContacts where p.id=:personId")
 public class Persons {
 	public Long getId() {
 		return id;
@@ -41,7 +60,10 @@ public class Persons {
 	@Column(name="address")
 	private String address;
 	
-	// Add @Temporal(TemporalType.TIMESTAMP) to be able to save both date and time to the database
+	// **********************************************************************************
+	// * Add @Temporal(TemporalType.TIMESTAMP) to be able to save 
+	// * both date and time to the database
+	// * ******************************************************************************
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="create_date")	
 	private Date createDate ;
@@ -53,8 +75,8 @@ public class Persons {
 	@Column(name="city")
 	private String city ;
 	
-	@OneToMany(mappedBy="person", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-	private List<PersonContacts> personContacts = new ArrayList<>();
+	@OneToMany(mappedBy="person", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	private List<PersonContacts> personContacts;
 	
 	public List<PersonContacts> getPersonContacts() {
 		return personContacts;

@@ -37,9 +37,9 @@ public class PersonContacts {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updateDate;
 	
-	@ManyToOne
-	@JoinColumn(name="person_id")
-	Persons person;
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="person_id", nullable=false)
+	private Persons person;
 
 	public long getId() {
 		return id;

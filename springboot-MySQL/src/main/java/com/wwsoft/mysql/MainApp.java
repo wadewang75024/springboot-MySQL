@@ -2,8 +2,12 @@ package com.wwsoft.mysql;
 
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +16,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import com.wwsoft.mysql.service.Configer;
+import com.wwsoft.mysql.configuration.Configer;
+import com.wwsoft.mysql.dtos.PersonEmail;
 
 /**
  * @author WWANG 
@@ -25,12 +30,25 @@ public class MainApp {
 	
 	ConfigurableApplicationContext context;
 	
+	@Value("${spring.profiles.active}")
+	private String activeProfile;
+	
 	protected static Logger logger = Logger.getLogger("MainApp");
 	
 	@Autowired
 	private BusinessApplicationHibernate businessApplicationH;
 	@Autowired
 	private BusinessApplicationJPA businessApplicationJ;
+	
+	@PostConstruct
+	public void init() {
+		logger.info("******************  Post bean processing-init");
+	}
+	
+	@PreDestroy
+	public void destroy() {
+		logger.info("******************  Post bean processing-destroy");
+	}
 	
     public static void main(final String[] args) throws Exception { 
     	    	
@@ -48,8 +66,39 @@ public class MainApp {
     	logger.info("*******************  sessionFactory: " + sessionFactory);
     	
     	logger.info("*******************  Start business processing......");
-    	mainObj.businessApplicationJ.start();
-    	mainObj.businessApplicationH.start();
+    	logger.info("*******************  activeProfile " + mainObj.activeProfile);
+    	
+    	if ( mainObj.activeProfile.equals("jpa") ) {
+    		mainObj.businessApplicationJ.start();
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    		logger.info("*********************** Run with Spring JPA - BusinessApplicationJPA ");
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    	}
+    	else {
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    		logger.info("*********************** Run with Hibernate - BusinessApplicationHibernate ");
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    		logger.info("****************************************************************************");
+    		mainObj.businessApplicationH.start();
+    	}
+    	
+    	/**********************************************************************************
+    	 * Try out the concept in which accessing spring beans from a non-bean class
+    	 **********************************************************************************/
+    	PersonEmail pe = new PersonEmail();
+    	pe.context = ctx;
+    	pe.tryAccessSpringBeans();
     	
     	/**
     	 * For Spring to call @PreDestroy callback method when you application shuts down, 
