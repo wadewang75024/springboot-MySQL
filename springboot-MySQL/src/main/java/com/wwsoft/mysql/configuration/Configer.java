@@ -68,7 +68,7 @@ public class Configer {
 	
 	
 	@Bean
-	  public LocalSessionFactoryBean sessionFactory() throws IOException {
+	public LocalSessionFactoryBean sessionFactory() throws IOException {
 	    LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
 	    sessionFactoryBean.setDataSource(dataSource());
 	    sessionFactoryBean.setPackagesToScan(ac.getPackagesToScan());
@@ -79,36 +79,35 @@ public class Configer {
 	    sessionFactoryBean.setHibernateProperties(hibernateProperties);
 
 	    return sessionFactoryBean;
-	  }
+	}
 	
-	 @Bean
-	   public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws IOException {
-	      LocalContainerEntityManagerFactoryBean em 
+	@Bean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws IOException {
+	    LocalContainerEntityManagerFactoryBean em 
 	        = new LocalContainerEntityManagerFactoryBean();
-	      em.setDataSource(dataSource());
-	      em.setPackagesToScan(ac.getPackagesToScan()); 
-	      JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-	      em.setJpaVendorAdapter(vendorAdapter);
-	      em.setJpaProperties(additionalProperties());
+	    em.setDataSource(dataSource());
+	    em.setPackagesToScan(ac.getPackagesToScan()); 
+	    JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+	    em.setJpaVendorAdapter(vendorAdapter);
+	    em.setJpaProperties(additionalProperties());
 	 
-	      return em;
-	   }
+	    return em;
+	 }
 	 
 	 Properties additionalProperties() {
-		    Properties properties = new Properties();
-		    properties.setProperty("hibernate.dialect", ac.getDialect());
-		    properties.setProperty("hibernate.show_sql", "true");
+		Properties properties = new Properties();
+		properties.setProperty("hibernate.dialect", ac.getDialect());
+		properties.setProperty("hibernate.show_sql", "true");
 		        
-		    return properties;
-		}
+		return properties;
+	 }
 	 
 	 @Bean
 	 @Profile("jpa")
 	 public PlatformTransactionManager transactionManager() throws IOException {
-	     JpaTransactionManager transactionManager = new JpaTransactionManager();
-	     transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-	  
-	     return transactionManager;
+	    JpaTransactionManager transactionManager = new JpaTransactionManager();
+	    transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());	  
+	    return transactionManager;
 	 }
 	  
 	 @Bean
@@ -118,11 +117,11 @@ public class Configer {
 	 
 	 @Bean
 	 @Profile("hibernate")
-	    public PlatformTransactionManager hibernateTransactionManager() throws IOException {
-	        final HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-	        transactionManager.setSessionFactory(sessionFactory().getObject());
-	        return transactionManager;
-	    }
+	 public PlatformTransactionManager hibernateTransactionManager() throws IOException {
+	     final HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+	     transactionManager.setSessionFactory(sessionFactory().getObject());
+	     return transactionManager;
+	 }
 }
 
 
