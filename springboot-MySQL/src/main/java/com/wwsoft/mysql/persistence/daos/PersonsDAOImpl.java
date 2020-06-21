@@ -10,6 +10,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
@@ -24,28 +25,7 @@ import com.wwsoft.mysql.persistence.entities.PersonContacts;
 import com.wwsoft.mysql.persistence.entities.Persons;
 
 @Component
-public class PersonsDAOImpl implements PersonsDAO {
-	private static Logger logger = Logger.getLogger("PersonsDAOImpl");
-	
-	@Autowired
-	@Qualifier("sessionFactory")
-	SessionFactory sessionFactory;
-	
-	@Autowired
-	EntityManagerFactory entityManagerFactory;
-	
-	private Session getSession() {
-		return sessionFactory.getCurrentSession();
-	}
-	
-	private Session openSession() {
-		return sessionFactory.openSession();
-	}
-	
-	private EntityManager getEntityManager() {
-		return entityManagerFactory.createEntityManager();
-	}
-	
+public class PersonsDAOImpl extends BaseDAO implements PersonsDAO {
 	@Override
 	@Transactional
 	public Persons getWithQuery(long id) throws Exception {
@@ -59,6 +39,40 @@ public class PersonsDAOImpl implements PersonsDAO {
 		query.setParameter("id", id);
 		
 		return query.list().get(0);
+	}
+	
+	@Override
+	public Persons getWithQueryHibernateTM(long id) {
+		logger.info("PersonsDAOImpl getWithQueryHibernateTM starts...: " + sessionFactory);
+		
+		Session session = null;  
+		Transaction tx = null;  
+		Persons p = null;
+		
+		try {
+			logger.info("*************** open session");
+			session = openSession();
+			
+			logger.info("*************** begin txn");
+			tx = session.beginTransaction();		
+			Query<Persons> query = session.createQuery("from Persons where id=:id", Persons.class);
+			query.setParameter("id", id);
+			p =  query.list().get(0);
+			
+			logger.info("*************** commit txn");
+			tx.commit();
+		}
+		catch (Exception ex ) {
+			ex.printStackTrace();  
+			
+			logger.info("*************** rollback txn");
+			tx.rollback();  
+		}
+		finally {
+			logger.info("*************** close session");
+			session.close();
+		}
+		return p;
 	}
 	
 	@Override
@@ -154,10 +168,40 @@ public class PersonsDAOImpl implements PersonsDAO {
 	
 	@Override
 	@Transactional
-	public long add(Persons newPerson) throws Exception {		
-		logger.info("PersonsDAOImpl add starts...: " );
+	public long addWithSave(Persons newPerson) throws Exception {		
+		logger.info("PersonsDAOImpl addWithSave starts...: " );
 		getSession().save(newPerson);
 		return newPerson.getId();	
+	}
+	
+	@Override
+	@Transactional
+	public void addWithPersist(Persons newPerson) throws Exception {
+		logger.info("PersonsDAOImpl addWithPersist starts...: " );
+		getSession().persist(newPerson);
+	}
+	
+	@Override
+	@Transactional
+	public Persons addWtihMerge(Persons newPerson) throws Exception {
+		logger.info("PersonsDAOImpl addWtihMerge starts...: " );
+		Persons p = (Persons) getSession().merge(newPerson);
+		return p;
+	}
+	
+	@Override
+	@Transactional
+	public void update(Persons p) throws Exception {
+		logger.info("PersonsDAOImpl update starts...: " );
+		getSession().update(p);
+	}
+	
+	@Override
+	@Transactional
+	public 
+	void saveOrUpdate(Persons p) throws Exception {
+		logger.info("PersonsDAOImpl update starts...: " );
+		getSession().saveOrUpdate(p);
 	}
 	
 	@Override

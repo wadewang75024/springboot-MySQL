@@ -14,6 +14,15 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+/**
+ * The idea of a owning side of a bidirectional relation comes from the fact that 
+ * in relational databases there are no bidirectional relations like in the case 
+ * of objects. In databases we only have unidirectional relations - foreign keys.
+ * 
+ * The owning side of the relation tracked by Hibernate is the side of the relation 
+ * that owns the foreign key in the database.
+ *
+ */
 @Entity
 @Table(name="new_persons_contacts")
 public class PersonContacts {
@@ -88,5 +97,4 @@ public class PersonContacts {
 	public void setPerson(Persons person) {
 		this.person = person;
 	}
-	
 }

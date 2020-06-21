@@ -16,7 +16,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import com.wwsoft.mysql.configuration.Configer;
+import com.wwsoft.mysql.configuration.DatabaseConfiguration;
 import com.wwsoft.mysql.dtos.PersonEmail;
 
 /**
@@ -57,7 +57,7 @@ public class MainApp {
     		System.out.println("Usage java <application.properties>");
     		System.exit(-1);
     	}
-    	Configer.appPropLocation = args[0];
+    	DatabaseConfiguration.appPropLocation = args[0];
     	ConfigurableApplicationContext ctx = SpringApplication.run(MainApp.class, args);
     	MainApp mainObj = ctx.getBean(MainApp.class);
     	mainObj.context = ctx;
@@ -90,7 +90,8 @@ public class MainApp {
     		logger.info("****************************************************************************");
     		logger.info("****************************************************************************");
     		logger.info("****************************************************************************");
-    		mainObj.businessApplicationH.start();
+    		// mainObj.businessApplicationH.start();
+    		mainObj.businessApplicationH.startManyToMany();
     	}
     	
     	/**********************************************************************************

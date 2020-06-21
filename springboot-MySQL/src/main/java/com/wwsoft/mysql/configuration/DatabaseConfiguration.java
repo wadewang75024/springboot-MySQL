@@ -26,7 +26,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-public class Configer {	
+public class DatabaseConfiguration {	
 	protected static Logger logger = Logger.getLogger("Configer");
 	
 	public static String appPropLocation;

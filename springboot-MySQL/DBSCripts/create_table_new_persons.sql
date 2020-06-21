@@ -12,8 +12,13 @@ primary key (person_id));
 
 -- Misc
 delete from new_persons
+where person_id between 111 and 116
+
+delete from new_persons_contacts
+where person_id between  111 and 116
 
 select * from new_persons
+
 
 drop table new_persons;
 
