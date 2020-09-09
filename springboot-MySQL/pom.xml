@@ -17,7 +17,7 @@
 	<properties>
 		<onxyexception.version>0.0.1-SNAPSHOT</onxyexception.version>
 		<springbootstarter.version>1.4.1.RELEASE</springbootstarter.version>
-		<hibernatevalidator.version>5.2.4.Final</hibernatevalidator.version>
+		<hibernatevalidator.version>5.3.6.Final</hibernatevalidator.version>
 		<slf4j.version>1.7.21</slf4j.version>
 		<mavencompiler.version>3.2</mavencompiler.version>
 		<jre.version>1.8</jre.version>	
